@@ -5,10 +5,15 @@ require 'puppet'
 module Puppet::Provider::Mount
   # This only works when the mount point is synced to the fstab.
   def mount
-    # Manually pass the mount options in, since some OSes *cough*OS X*cough* don't
-    # read from /etc/fstab but still want to use this type.
     args = []
-    args << "-o" << self.options if self.options and self.options != :absent
+    # Make sure all the facts are loaded.
+    Facter.loadfacts
+    case Facter.value(:kernel)
+    when "Darwin"
+      # Manually pass the mount options in, since some OSes *cough*OS X*cough* don't
+      # read from /etc/fstab but still want to use this type.
+      args << "-o" << self.options if self.options and self.options != :absent
+    end
     args << resource[:name]
 
     mountcmd(*args)
