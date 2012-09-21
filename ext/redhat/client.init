@@ -31,7 +31,6 @@ PUPPET_OPTS="agent "
 # RHEL < 5 can't.
 if status | grep -q -- '-p' 2>/dev/null; then
     daemonopts="--pidfile $pidfile"
-    pidopts="-p $pidfile"
 fi
 
 # Figure out if the system just booted. Let's assume
@@ -50,7 +49,7 @@ start() {
 
 stop() {
     echo -n $"Stopping puppet agent: "
-    killproc $pidopts $puppetd
+    killproc $puppetd
     RETVAL=$?
     echo
     [ $RETVAL = 0 ] && rm -f ${lockfile} ${pidfile}
@@ -58,7 +57,7 @@ stop() {
 
 reload() {
     echo -n $"Restarting puppet agent: "
-    killproc $pidopts $puppetd -HUP
+    killproc $puppetd -HUP
     RETVAL=$?
     echo
     return $RETVAL
@@ -70,7 +69,7 @@ restart() {
 }
 
 rh_status() {
-    status $pidopts $puppetd
+    status $puppetd
     RETVAL=$?
     return $RETVAL
 }
